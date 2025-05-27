@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет | LanguaParadise</title>
+    <link href="/static/css/minimal.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">LanguaParadise</a>
+                <nav class="nav">
+                    <a href="/courses">Курсы</a>
+                    <a href="/person">Личный кабинет</a>
+                    <a href="/korzina">Корзина</a>
+                    <a href="/logout">Выход</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Личный кабинет</h1>
+
+            <!-- Блок с личной информацией -->
+            <div class="profile-section">
+                <div class="card profile-main-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <div class="avatar-placeholder">
+                                <span th:if="${user.avatar == null}" th:text="${user.name != null ? user.name.substring(0,1).toUpperCase() : 'U'}">U</span>
+                                <img th:if="${user.avatar != null}" th:src="${user.avatar}" alt="Аватар" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            </div>
+                            <button class="btn btn-secondary btn-small" onclick="changePhoto()">Изменить фото</button>
+                            <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="handlePhotoChange(event)">
+                        </div>
+                        <div class="profile-details">
+                            <div class="profile-field">
+                                <label>Имя:</label>
+                                <span th:text="${user.name}">Имя пользователя</span>
+                            </div>
+                            <div class="profile-field">
+                                <label>Фамилия:</label>
+                                <span th:text="${user.surName}">Фамилия пользователя</span>
+                            </div>
+                            <div class="profile-field">
+                                <label>Дата рождения:</label>
+                                <span th:text="${user.birthDate != null ? #temporals.format(user.birthDate, 'dd.MM.yyyy') : 'Не указана'}" 
+                                      th:class="${user.birthDate != null ? '' : 'text-muted'}">Не указана</span>
+                            </div>
+                            <div class="profile-field">
+                                <label>Email:</label>
+                                <span th:text="${user.username}">email@example.com</span>
+                            </div>
+                            <div class="profile-field">
+                                <label>Роль:</label>
+                                <span id="userRole" th:text="${user.role != null ? user.role.displayName : 'Пользователь'}">Пользователь</span>
+                            </div>
+                            <div class="profile-field">
+                                <label>Баланс:</label>
+                                <span id="userBalance" class="balance" th:text="${user.balance != null ? user.balance + ' ₽' : '0 ₽'}">0 ₽</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn btn-primary" onclick="editProfile()">Редактировать профиль</button>
+                        <button class="btn btn-secondary" onclick="showBalanceModal()">Пополнить баланс</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Нижние блоки: История заказов и Статистика -->
+            <div class="profile-bottom-section">
+                <!-- История заказов -->
+                <div class="profile-section-half">
+                    <h2>История заказов</h2>
+                    
+                    <div th:if="${not #lists.isEmpty(orders)}">
+                        <div class="orders-list">
+                            <div class="order-card" th:each="order : ${orders}">
+                                <div class="order-header">
+                                    <div class="order-date">
+                                        <strong>📅 Заказ от </strong>
+                                        <span th:text="${order.orderDate}">Дата заказа</span>
+                                    </div>
+                                    <div class="order-total">
+                                        <strong th:text="${order.totalCost} + '₽'">Стоимость</strong>
+                                    </div>
+                                </div>
+                                
+                                <div class="order-courses">
+                                    <div class="courses-header">
+                                        <strong>📚 Курсы в заказе:</strong>
+                                    </div>
+                                    <div class="courses-grid">
+                                        <div class="course-item" th:each="orderItem : ${order.orderItems}">
+                                            <div class="course-avatar">
+                                                <div th:if="${orderItem.cours.avatar == null}" class="avatar-placeholder">📖</div>
+                                                <img th:if="${orderItem.cours.avatar != null}" th:src="${orderItem.cours.avatar}" alt="Курс">
+                                            </div>
+                                            <div class="course-info">
+                                                <div class="course-name" th:text="${orderItem.cours.name}">Название курса</div>
+                                                <div class="course-price" th:text="${orderItem.cours.coursPrice} + '₽'">Цена</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(orders)}" class="text-center">
+                        <div class="card">
+                            <h3>У вас пока нет заказов</h3>
+                            <p class="text-muted mb-3">Начните изучение языков прямо сейчас!</p>
+                            <a href="/courses" class="btn btn-primary">Посмотреть курсы</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Статистика -->
+                <div class="profile-section-half">
+                    <h2>Статистика</h2>
+                    <div class="card">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number" th:text="${#lists.size(orders)}">0</div>
+                                <div class="stat-label">Всего заказов</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" th:text="${orders != null and !#lists.isEmpty(orders) ? #aggregates.sum(orders.![totalCost]) + '₽' : '0₽'}">0₽</div>
+                                <div class="stat-label">Потрачено всего</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" th:text="${orders != null and !#lists.isEmpty(orders) ? #aggregates.sum(orders.![#lists.size(orderItems)]) : 0}">0</div>
+                                <div class="stat-label">Курсов куплено</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>О нас</h3>
+                    <p class="text-muted">
+                        LanguaParadise — разрушаем языковые барьеры с комфортом!
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h3>Навигация</h3>
+                    <ul>
+                        <li><a href="/courses">Курсы</a></li>
+                        <li><a href="/person">Личный кабинет</a></li>
+                        <li><a href="/korzina">Корзина</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li>ИКБО-36-22</li>
+                        <li>Назиров Ф. Ф.</li>
+                        <li><a href="mailto:nazirov.f.f@gmail.com">nazirov.f.f@gmail.com</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Модальное окно редактирования профиля -->
+    <div id="editProfileModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Редактировать профиль</h3>
+                <span class="close" onclick="closeModal('editProfileModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm">
+                    <div class="form-group">
+                        <label class="form-label" for="editName">Имя</label>
+                        <input type="text" id="editName" class="form-input" th:value="${user.name}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editSurname">Фамилия</label>
+                        <input type="text" id="editSurname" class="form-input" th:value="${user.surName}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editBirthdate">Дата рождения</label>
+                        <input type="date" id="editBirthdate" class="form-input" th:value="${user.birthDate}">
+                    </div>
+                    <!-- Email заблокирован для изменения -->
+                    <div class="form-group">
+                        <label class="form-label">Email (не изменяется)</label>
+                        <input type="email" class="form-input" th:value="${user.username}" disabled style="background-color: var(--light-gray); color: var(--text-secondary);">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-primary" onclick="saveProfile()">Сохранить</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editProfileModal')">Отмена</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно пополнения баланса -->
+    <div id="balanceModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Пополнить баланс</h3>
+                <span class="close" onclick="closeModal('balanceModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="balanceForm">
+                    <div class="form-group">
+                        <label class="form-label" for="amount">Сумма пополнения (₽)</label>
+                        <input type="number" id="amount" class="form-input" min="100" max="50000" placeholder="Введите сумму" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="paymentMethod">Способ оплаты</label>
+                        <select id="paymentMethod" class="form-input" required>
+                            <option value="">Выберите способ оплаты</option>
+                            <option value="card">Банковская карта</option>
+                            <option value="yandex">Яндекс.Деньги</option>
+                            <option value="qiwi">QIWI</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-primary" onclick="processPayment()">Пополнить</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('balanceModal')">Отмена</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        function changePhoto() {
+            document.getElementById('photoInput').click();
+        }
+
+        function handlePhotoChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('Размер файла не должен превышать 5MB', 'error');
+                    return;
+                }
+
+
+                if (!file.type.startsWith('image/')) {
+                    showNotification('Пожалуйста, выберите изображение', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64String = e.target.result;
+                    
+
+                    const avatarPlaceholder = document.querySelector('.avatar-placeholder');
+                    avatarPlaceholder.innerHTML = `<img src="${base64String}" alt="Аватар" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                    
+
+                    const avatarData = {
+                        avatar: base64String
+                    };
+
+                    fetch('/api/avatar/update', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(avatarData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification('Фото успешно сохранено!', 'success');
+                        } else {
+                            showNotification(data.message || 'Ошибка сохранения фото', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('Ошибка соединения с сервером', 'error');
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+
+        function editProfile() {
+            document.getElementById('editProfileModal').style.display = 'flex';
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('editName').value;
+            const surname = document.getElementById('editSurname').value;
+            const birthdate = document.getElementById('editBirthdate').value;
+
+            if (!name || !surname || !birthdate) {
+                showNotification('Пожалуйста, заполните все обязательные поля', 'error');
+                return;
+            }
+
+
+            const profileData = {
+                name: name,
+                surName: surname,
+                birthDate: birthdate || null
+            };
+
+            fetch('/api/profile/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(profileData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+
+                    document.querySelector('.profile-field:nth-child(1) span').textContent = name;
+                    document.querySelector('.profile-field:nth-child(2) span').textContent = surname;
+                    
+                    if (birthdate) {
+                        const formattedDate = new Date(birthdate).toLocaleDateString('ru-RU');
+                        document.querySelector('.profile-field:nth-child(3) span').textContent = formattedDate;
+                        document.querySelector('.profile-field:nth-child(3) span').classList.remove('text-muted');
+                    }
+
+
+                    const avatarImg = document.querySelector('.avatar-placeholder img');
+                    if (!avatarImg) {
+                        document.querySelector('.avatar-placeholder span').textContent = name.charAt(0).toUpperCase();
+                    }
+
+                    closeModal('editProfileModal');
+                    showNotification('Профиль успешно обновлен!', 'success');
+                } else {
+                    showNotification(data.message || 'Ошибка обновления профиля', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Ошибка соединения с сервером', 'error');
+            });
+        }
+
+
+        function showBalanceModal() {
+            document.getElementById('balanceModal').style.display = 'flex';
+        }
+
+        function processPayment() {
+            const amount = document.getElementById('amount').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+
+            if (!amount || !paymentMethod) {
+                showNotification('Пожалуйста, заполните все поля', 'error');
+                return;
+            }
+
+            if (amount < 100) {
+                showNotification('Минимальная сумма пополнения: 100 ₽', 'error');
+                return;
+            }
+
+
+            const balanceData = {
+                amount: parseFloat(amount),
+                paymentMethod: paymentMethod
+            };
+
+            showNotification('Обработка платежа...', 'info');
+
+            fetch('/api/balance/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(balanceData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+
+                    const balanceElement = document.getElementById('userBalance');
+                    balanceElement.textContent = data.newBalance + ' ₽';
+                    
+                    closeModal('balanceModal');
+                    showNotification(`Баланс успешно пополнен на ${amount} ₽!`, 'success');
+                    
+
+                    document.getElementById('balanceForm').reset();
+                } else {
+                    showNotification(data.message || 'Ошибка пополнения баланса', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Ошибка соединения с сервером', 'error');
+            });
+        }
+
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+
+        window.onclick = function(event) {
+            const editModal = document.getElementById('editProfileModal');
+            const balanceModal = document.getElementById('balanceModal');
+            
+            if (event.target === editModal) {
+                closeModal('editProfileModal');
+            }
+            if (event.target === balanceModal) {
+                closeModal('balanceModal');
+            }
+        }
+    </script>
+</body>
+</html> 

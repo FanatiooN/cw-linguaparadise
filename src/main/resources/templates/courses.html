@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Курсы | LanguaParadise</title>
+    <link href="/static/css/minimal.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">LanguaParadise</a>
+                <nav class="nav">
+                    <a href="/courses">Курсы</a>
+                    <a href="/person">Личный кабинет</a>
+                    <a href="/korzina">Корзина</a>
+                    <a href="/logout">Выход</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Каталог курсов</h1>
+
+            <div th:if="${#authentication.principal != null and #authentication.principal.user != null and #authentication.principal.user.role != null and #authentication.principal.user.role.name() == 'ADMIN'}" class="mb-4">
+                <button class="btn btn-primary" onclick="showCreateCourseModal()">
+                    Создать новый курс
+                </button>
+            </div>
+
+            <div class="courses-grid">
+                <div class="course-card" th:each="cours : ${coursList}">
+                    <div class="course-avatar" style="margin-bottom: 1rem;">
+                        <div th:if="${cours.avatar == null}" class="avatar-placeholder" 
+                             style="width: 100%; height: 150px; background: var(--light-gray); border-radius: var(--border-radius); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent);">
+                            📚
+                        </div>
+                        <img th:if="${cours.avatar != null}" th:src="${cours.avatar}" alt="Аватар курса" 
+                             style="width: 100%; height: 150px; object-fit: cover; border-radius: var(--border-radius);">
+                    </div>
+                    
+                    <h3 class="course-title" th:text="${cours.name}">Название курса</h3>
+                    <div class="course-price" th:text="${cours.coursPrice} + '₽'">Цена</div>
+                    <p class="course-description" th:text="${cours.description}">Описание курса</p>
+                    <button class="btn btn-primary btn-block add-to-cart-btn"
+                            th:data-id="${cours.id}"
+                            th:data-name="${cours.name}"
+                            th:data-price="${cours.coursPrice}"
+                            th:data-description="${cours.description}"
+                            th:data-avatar="${cours.avatar}">
+                        Добавить в корзину
+                    </button>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(coursList)}" class="text-center mt-4">
+                <div class="card">
+                    <h3>Курсы временно недоступны</h3>
+                    <p class="text-muted">Пожалуйста, попробуйте позже или свяжитесь с нами.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>О нас</h3>
+                    <p class="text-muted">
+                        LanguaParadise — разрушаем языковые барьеры с комфортом!
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h3>Навигация</h3>
+                    <ul>
+                        <li><a href="/courses">Курсы</a></li>
+                        <li><a href="/person">Личный кабинет</a></li>
+                        <li><a href="/korzina">Корзина</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li>ИКБО-36-22</li>
+                        <li>Назиров Ф. Ф.</li>
+                        <li><a href="mailto:nazirov.f.f@gmail.com">nazirov.f.f@gmail.com</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="createCourseModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Создать новый курс</h3>
+                <span class="close" onclick="closeModal('createCourseModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="createCourseForm">
+                    <div class="form-group">
+                        <label class="form-label" for="courseName">Название курса</label>
+                        <input type="text" id="courseName" class="form-input" placeholder="Введите название курса" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="coursePrice">Цена (₽)</label>
+                        <input type="number" id="coursePrice" class="form-input" min="0" placeholder="Введите цену" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="courseDescription">Описание</label>
+                        <textarea id="courseDescription" class="form-input" rows="4" placeholder="Введите описание курса" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="courseAvatar">Изображение курса</label>
+                        <input type="file" id="courseAvatar" accept="image/*" class="form-input" onchange="handleCourseAvatarChange(event)">
+                        <div id="courseAvatarPreview" style="margin-top: 1rem; display: none;">
+                            <img id="courseAvatarImg" style="max-width: 200px; max-height: 150px; border-radius: var(--border-radius);">
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-primary" onclick="createCourse()">Создать курс</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('createCourseModal')">Отмена</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let courseAvatarBase64 = null;
+        
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.dataset.id);
+                    const name = this.dataset.name;
+                    const price = parseInt(this.dataset.price);
+                    const description = this.dataset.description;
+                    const avatar = this.dataset.avatar === 'null' ? null : this.dataset.avatar;
+                    
+                    addToCart(id, name, price, description, avatar);
+                });
+            });
+        });
+
+        function addToCart(id, name, price, description, avatar) {
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                showNotification('Курс уже добавлен в корзину', 'warning');
+                return;
+            }
+
+            const course = {
+                id: id,
+                name: name,
+                price: price,
+                description: description,
+                avatar: avatar
+            };
+
+            cart.push(course);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showNotification('Курс добавлен в корзину!', 'success');
+        }
+
+        function showCreateCourseModal() {
+            document.getElementById('createCourseModal').style.display = 'flex';
+        }
+
+        function handleCourseAvatarChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('Размер файла не должен превышать 5MB', 'error');
+                    return;
+                }
+
+                if (!file.type.startsWith('image/')) {
+                    showNotification('Пожалуйста, выберите изображение', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    courseAvatarBase64 = e.target.result;
+                    
+                    const preview = document.getElementById('courseAvatarPreview');
+                    const img = document.getElementById('courseAvatarImg');
+                    img.src = courseAvatarBase64;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function createCourse() {
+            const name = document.getElementById('courseName').value;
+            const price = document.getElementById('coursePrice').value;
+            const description = document.getElementById('courseDescription').value;
+
+            if (!name || !price || !description) {
+                showNotification('Пожалуйста, заполните все обязательные поля', 'error');
+                return;
+            }
+
+            const courseData = {
+                name: name,
+                coursPrice: price,
+                description: description,
+                avatar: courseAvatarBase64
+            };
+
+            fetch('/api/courses/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(courseData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Курс успешно создан!', 'success');
+                    closeModal('createCourseModal');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showNotification(data.message || 'Ошибка создания курса', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Ошибка соединения с сервером', 'error');
+            });
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            if (modalId === 'createCourseModal') {
+                document.getElementById('createCourseForm').reset();
+                document.getElementById('courseAvatarPreview').style.display = 'none';
+                courseAvatarBase64 = null;
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('createCourseModal');
+            if (event.target === modal) {
+                closeModal('createCourseModal');
+            }
+        }
+    </script>
+</body>
+</html> 

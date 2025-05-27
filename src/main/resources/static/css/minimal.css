@@ -1,0 +1,989 @@
+/* Минималистичный дизайн в бело-серых тонах */
+
+/* Сброс стилей */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Основные переменные */
+:root {
+    --white: #ffffff;
+    --light-gray: #f8f9fa;
+    --border-gray: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --accent: #495057;
+    --hover: #343a40;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+    --transition: all 0.3s ease;
+}
+
+/* Базовые стили */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--white);
+    font-size: 16px;
+}
+
+/* Контейнер */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Хедер */
+header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border-gray);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+/* Навигация */
+.nav {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.nav a:hover {
+    color: var(--text-primary);
+}
+
+/* Основной контент */
+main {
+    min-height: calc(100vh - 200px);
+    padding: 3rem 0;
+}
+
+/* Карточки */
+.card {
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
+
+/* Формы */
+.form-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: var(--transition);
+    background: var(--white);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(73, 80, 87, 0.1);
+}
+
+.form-input::placeholder {
+    color: var(--text-secondary);
+}
+
+/* Кнопки */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    line-height: 1;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--hover);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-gray);
+}
+
+.btn-secondary:hover {
+    background: var(--light-gray);
+    color: var(--text-primary);
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Сетка курсов */
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.course-card {
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    transition: var(--transition);
+}
+
+.course-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.course-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.course-price {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 1rem;
+}
+
+.course-description {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+/* Корзина */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-gray);
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-total {
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-align: right;
+    padding: 1rem;
+    border-top: 2px solid var(--border-gray);
+    margin-top: 1rem;
+}
+
+/* Личный кабинет */
+.profile-section {
+    margin-bottom: 3rem;
+}
+
+/* Основная карточка профиля */
+.profile-main-card {
+    padding: 2.5rem;
+}
+
+.profile-header {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Аватарка */
+.profile-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--light-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 600;
+    color: var(--accent);
+    border: 3px solid var(--border-gray);
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+/* Детали профиля */
+.profile-details {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.profile-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.profile-field label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.profile-field span {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+}
+
+.balance {
+    color: var(--accent) !important;
+    font-weight: 600;
+}
+
+#userRole {
+    color: var(--accent) !important;
+    font-weight: 600;
+}
+
+/* Действия профиля */
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-gray);
+}
+
+/* Нижняя секция с двумя колонками */
+.profile-bottom-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.profile-section-half {
+    margin-bottom: 0;
+}
+
+/* Статистика */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    background: var(--light-gray);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Быстрые действия */
+.quick-actions {
+    margin-top: 2rem;
+}
+
+.quick-actions h3 {
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+/* Модальные окна */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-gray);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.close {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.close:hover {
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+}
+
+/* Уведомления */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    color: var(--white);
+    font-weight: 500;
+    z-index: 1001;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    max-width: 300px;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-success {
+    background-color: #28a745;
+}
+
+.notification-error {
+    background-color: #dc3545;
+}
+
+.notification-info {
+    background-color: #17a2b8;
+}
+
+.profile-info {
+    background: var(--light-gray);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+}
+
+.orders-list {
+    list-style: none;
+}
+
+.order-item {
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.order-date {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.order-courses {
+    margin-bottom: 1rem;
+}
+
+.order-total {
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* Футер */
+footer {
+    background: var(--light-gray);
+    border-top: 1px solid var(--border-gray);
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+}
+
+.footer-section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-section a:hover {
+    color: var(--text-primary);
+}
+
+/* Заголовки */
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+/* Утилиты */
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: var(--text-secondary);
+}
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .nav {
+        gap: 1rem;
+    }
+    
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .profile-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-bottom-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-actions {
+        flex-direction: column;
+    }
+    
+    .avatar-placeholder {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+    }
+}
+
+/* Стили для улучшенной корзины */
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-gray);
+}
+
+.cart-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.cart-items {
+    margin-bottom: 2rem;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    background: var(--light-gray);
+    transition: var(--transition);
+}
+
+.cart-item:hover {
+    box-shadow: var(--shadow);
+}
+
+.course-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.course-avatar {
+    width: 60px;
+    height: 60px;
+    margin-right: 1rem;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+}
+
+.course-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.course-avatar .avatar-placeholder {
+    font-size: 1.5rem;
+    color: var(--accent);
+}
+
+.course-details h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.course-price {
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0.25rem 0;
+}
+
+.course-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.empty-cart-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.cart-summary {
+    background: var(--light-gray);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+}
+
+.summary-row:last-child {
+    margin-bottom: 0;
+}
+
+.balance-check {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+}
+
+.alert-warning {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+}
+
+.cart-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.available-courses {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.course-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius);
+    background: var(--white);
+    transition: var(--transition);
+}
+
+.course-item:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: var(--white);
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+    background: var(--accent);
+    transform: none;
+}
+
+/* Адаптивность для корзины */
+@media (max-width: 768px) {
+    .cart-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .cart-item {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .course-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .course-avatar {
+        margin: 0 auto 1rem auto;
+    }
+    
+    .course-description {
+        max-width: none;
+        white-space: normal;
+    }
+    
+    .cart-actions {
+        flex-direction: column;
+    }
+    
+    .available-courses {
+        grid-template-columns: 1fr;
+    }
+    
+    .course-item {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Стили для истории заказов */
+.order-card {
+    background: var(--white);
+    border: 1px solid var(--border-gray);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.order-card:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-gray);
+}
+
+.order-date {
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.order-total {
+    color: var(--accent);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.courses-header {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.order-courses .courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.order-courses .course-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--light-gray);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.order-courses .course-item:hover {
+    background: var(--border-gray);
+}
+
+.order-courses .course-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.order-courses .course-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.order-courses .course-avatar .avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--accent);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.order-courses .course-info {
+    flex: 1;
+}
+
+.order-courses .course-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.order-courses .course-price {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Адаптивность для истории заказов */
+@media (max-width: 768px) {
+    .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .order-courses .courses-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .order-courses .course-item {
+        padding: 0.75rem;
+    }
+    
+    .order-courses .course-avatar {
+        width: 40px;
+        height: 40px;
+    }
+} 

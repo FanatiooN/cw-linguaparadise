@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход | LanguaParadise</title>
+    <link href="/static/css/minimal.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">LanguaParadise</a>
+                <nav class="nav">
+                    <a href="/courses">Курсы</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Форма входа -->
+            <div class="form-container" id="loginForm">
+                <div class="card">
+                    <h2 class="text-center">Вход в систему</h2>
+                    <form th:action="@{/login}" th:object="${userReg}" method="POST">
+                        <div class="form-group">
+                            <label class="form-label" for="loginEmail">Email</label>
+                            <input type="email" id="loginEmail" class="form-input" 
+                                   th:field="*{username}" placeholder="Введите ваш email" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="loginPassword">Пароль</label>
+                            <input type="password" id="loginPassword" class="form-input" 
+                                   th:field="*{password}" placeholder="Введите пароль" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Войти</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <button type="button" class="btn btn-secondary" onclick="showRegisterForm()">
+                            Нет аккаунта? Зарегистрироваться
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Форма регистрации -->
+            <div class="form-container" id="registerForm" style="display: none;">
+                <div class="card">
+                    <h2 class="text-center">Регистрация</h2>
+                    <form th:action="@{/reg}" th:object="${userReg}" method="POST">
+                        <div class="form-group">
+                            <label class="form-label" for="regName">Имя</label>
+                            <input type="text" id="regName" class="form-input" 
+                                   th:field="*{name}" placeholder="Введите ваше имя" 
+                                   pattern="^[а-яА-ЯёЁa-zA-Z]{3,}$" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="regSurname">Фамилия</label>
+                            <input type="text" id="regSurname" class="form-input" 
+                                   th:field="*{surName}" placeholder="Введите вашу фамилию" 
+                                   pattern="^[а-яА-ЯёЁa-zA-Z]{3,}$" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="regEmail">Email</label>
+                            <input type="email" id="regEmail" class="form-input" 
+                                   th:field="*{username}" placeholder="Введите ваш email" 
+                                   pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="regPassword">Пароль</label>
+                            <input type="password" id="regPassword" class="form-input" 
+                                   th:field="*{password}" placeholder="Создайте пароль" 
+                                   oninput="checkPasswords()" required>
+                        </div>
+                        <div class="form-group" id="confirmGroup">
+                            <label class="form-label" for="confirmPassword">Подтвердите пароль</label>
+                            <input type="password" id="confirmPassword" class="form-input" 
+                                   placeholder="Повторите пароль" oninput="checkPasswords()" required>
+                        </div>
+                        <div id="passwordError" style="display: none; color: #dc3545; margin-bottom: 1rem;">
+                            Пароли не совпадают
+                        </div>
+                        <button type="button" class="btn btn-primary btn-block" onclick="validateAndSubmit()">
+                            Зарегистрироваться
+                        </button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <button type="button" class="btn btn-secondary" onclick="showLoginForm()">
+                            Уже есть аккаунт? Войти
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>О нас</h3>
+                    <p class="text-muted">
+                        LanguaParadise — разрушаем языковые барьеры с комфортом!
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h3>Навигация</h3>
+                    <ul>
+                        <li><a href="/courses">Курсы</a></li>
+                        <li><a href="/person">Личный кабинет</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li>ИКБО-36-22</li>
+                        <li>Назиров Ф. Ф.</li>
+                        <li><a href="mailto:nazirov.f.f@gmail.com">nazirov.f.f@gmail.com</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function showRegisterForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        function showLoginForm() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+
+        function checkPasswords() {
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorDiv = document.getElementById('passwordError');
+            
+            if (password && confirmPassword && password !== confirmPassword) {
+                errorDiv.style.display = 'block';
+            } else {
+                errorDiv.style.display = 'none';
+            }
+        }
+
+        function validateAndSubmit() {
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorDiv = document.getElementById('passwordError');
+            
+            if (password !== confirmPassword) {
+                errorDiv.style.display = 'block';
+                return false;
+            } else {
+                errorDiv.style.display = 'none';
+                document.querySelector('#registerForm form').submit();
+            }
+        }
+    </script>
+</body>
+</html> 

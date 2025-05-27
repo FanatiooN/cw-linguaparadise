@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина | LanguaParadise</title>
+    <link href="/static/css/minimal.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">LanguaParadise</a>
+                <nav class="nav">
+                    <a href="/courses">Курсы</a>
+                    <a href="/person">Личный кабинет</a>
+                    <a href="/korzina">Корзина</a>
+                    <a href="/logout">Выход</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Корзина</h1>
+            <p class="text-center text-muted mb-4">
+                Управляйте своими курсами и оформляйте заказ
+            </p>
+
+            <!-- Корзина с курсами -->
+            <div class="card">
+                <div class="cart-header">
+                    <h3>Выбранные курсы</h3>
+                    <button class="btn btn-secondary" onclick="clearCart()">Очистить корзину</button>
+                </div>
+
+                <div id="cartItems" class="cart-items">
+                    <!-- Курсы будут добавляться динамически через JavaScript -->
+                </div>
+
+                <!-- Пустая корзина -->
+                <div id="emptyCart" class="text-center" style="display: none;">
+                    <div class="empty-cart-icon">🛒</div>
+                    <h3>Корзина пуста</h3>
+                    <p class="text-muted mb-4">Добавьте курсы из каталога для оформления заказа</p>
+                    <a href="/courses" class="btn btn-primary">Перейти к курсам</a>
+                </div>
+
+                <!-- Итоговая информация -->
+                <div id="cartSummary" class="cart-summary" style="display: none;">
+                    <div class="summary-row">
+                        <span>Количество курсов:</span>
+                        <span id="totalItems">0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Общая стоимость:</span>
+                        <span id="totalPrice">0₽</span>
+                    </div>
+                    <div class="summary-row balance-check" id="balanceCheck" style="display: none;">
+                        <span>Ваш баланс:</span>
+                        <span id="userBalance">0₽</span>
+                        <button class="btn btn-sm btn-secondary" onclick="refreshBalance()" style="margin-left: 10px;">
+                            🔄 Обновить
+                        </button>
+                    </div>
+                    <div id="insufficientFunds" class="alert alert-warning" style="display: none;">
+                        ⚠️ Недостаточно средств на балансе. Пополните баланс в личном кабинете.
+                    </div>
+                </div>
+
+                <!-- Кнопки действий -->
+                <div id="cartActions" class="cart-actions" style="display: none;">
+                    <button class="btn btn-primary" onclick="checkout()" id="checkoutBtn">
+                        Оформить заказ
+                    </button>
+                    <a href="/courses" class="btn btn-secondary">
+                        Продолжить покупки
+                    </a>
+                </div>
+            </div>
+
+            <!-- Информация о заказе -->
+            <div class="card mt-4">
+                <h3>Информация о заказе</h3>
+                <ul class="text-muted">
+                    <li>После оформления заказа вы получите email-подтверждение</li>
+                    <li>В письме будет указан список выбранных курсов и общая стоимость</li>
+                    <li>Доступ к курсам будет предоставлен в течение 24 часов</li>
+                    <li>При возникновении вопросов обращайтесь в службу поддержки</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>О нас</h3>
+                    <p class="text-muted">
+                        LanguaParadise — разрушаем языковые барьеры с комфортом!
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h3>Навигация</h3>
+                    <ul>
+                        <li><a href="/courses">Курсы</a></li>
+                        <li><a href="/person">Личный кабинет</a></li>
+                        <li><a href="/korzina">Корзина</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li>ИКБО-36-22</li>
+                        <li>Назиров Ф. Ф.</li>
+                        <li><a href="mailto:nazirov.f.f@gmail.com">nazirov.f.f@gmail.com</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+
+        let userBalance = 0;
+        
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            getUserBalance();
+            
+
+            updateCartDisplay();
+        });
+
+
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                getUserBalance();
+            }
+        });
+
+
+        window.addEventListener('focus', function() {
+            getUserBalance();
+        });
+
+
+        function getUserBalance() {
+            fetch('/api/user/balance', {
+                method: 'GET',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    userBalance = data.balance || 0;
+                    document.getElementById('userBalance').textContent = userBalance + '₽';
+                    updateCartDisplay();
+                })
+                .catch(error => {
+                    console.error('Ошибка получения баланса:', error);
+                    userBalance = 0;
+                    document.getElementById('userBalance').textContent = '0₽';
+                });
+        }
+
+
+        function refreshBalance() {
+            showNotification('Обновление баланса...', 'info');
+            getUserBalance();
+        }
+
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartDisplay();
+            showNotification('Курс удален из корзины', 'info');
+        }
+
+
+        function clearCart() {
+            if (cart.length === 0) {
+                showNotification('Корзина уже пуста', 'info');
+                return;
+            }
+            
+            if (confirm('Вы уверены, что хотите очистить корзину?')) {
+                cart = [];
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartDisplay();
+                showNotification('Корзина очищена', 'info');
+            }
+        }
+
+
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cartItems');
+            const emptyCart = document.getElementById('emptyCart');
+            const cartSummary = document.getElementById('cartSummary');
+            const cartActions = document.getElementById('cartActions');
+            const balanceCheck = document.getElementById('balanceCheck');
+            const insufficientFunds = document.getElementById('insufficientFunds');
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = '';
+                emptyCart.style.display = 'block';
+                cartSummary.style.display = 'none';
+                cartActions.style.display = 'none';
+                return;
+            }
+
+            emptyCart.style.display = 'none';
+            cartSummary.style.display = 'block';
+            cartActions.style.display = 'block';
+
+
+            cartItems.innerHTML = cart.map(course => `
+                <div class="cart-item">
+                    <div class="course-info">
+                        <div class="course-avatar">
+                            ${course.avatar ? 
+                                `<img src="${course.avatar}" alt="Аватар курса">` : 
+                                '<div class="avatar-placeholder">📚</div>'
+                            }
+                        </div>
+                        <div class="course-details">
+                            <h4>${course.name}</h4>
+                            <p class="course-price">${course.price}₽</p>
+                            <p class="course-description">${course.description}</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="removeFromCart(${course.id})">
+                        Удалить
+                    </button>
+                </div>
+            `).join('');
+
+
+            const totalItems = cart.length;
+            const totalPrice = cart.reduce((sum, course) => sum + course.price, 0);
+
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('totalPrice').textContent = totalPrice + '₽';
+
+
+            balanceCheck.style.display = 'block';
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            if (totalPrice > userBalance) {
+                insufficientFunds.style.display = 'block';
+                checkoutBtn.disabled = true;
+                checkoutBtn.textContent = 'Недостаточно средств';
+            } else {
+                insufficientFunds.style.display = 'none';
+                checkoutBtn.disabled = false;
+                checkoutBtn.textContent = 'Оформить заказ';
+            }
+        }
+
+
+        function checkout() {
+            if (cart.length === 0) {
+                showNotification('Корзина пуста', 'warning');
+                return;
+            }
+
+            const totalPrice = cart.reduce((sum, course) => sum + course.price, 0);
+            if (totalPrice > userBalance) {
+                showNotification('Недостаточно средств на балансе', 'error');
+                return;
+            }
+
+
+            const orderData = {
+                courses: cart,
+                totalCost: totalPrice
+            };
+
+            fetch('/api/orders/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Заказ успешно оформлен!', 'success');
+
+                    cart = [];
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    updateCartDisplay();
+                    
+
+                    userBalance = userBalance - totalPrice;
+                    document.getElementById('userBalance').textContent = userBalance + '₽';
+                    
+
+                    setTimeout(() => {
+                        window.location.href = '/person';
+                    }, 2000);
+                } else {
+                    showNotification(data.message || 'Ошибка оформления заказа', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Ошибка соединения с сервером', 'error');
+            });
+        }
+
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 
